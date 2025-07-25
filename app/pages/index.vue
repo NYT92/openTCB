@@ -288,57 +288,56 @@
                 </label>
                 <USlider v-model="frameOpacity" :min="10" :max="100" />
               </div>
-
-              <div>
-                <h5 class="text-sm font-medium text-gray-300 mb-2">
-                  {{ t("frameControls.position") }}
-                </h5>
-                <p class="text-xs text-gray-400 mb-2">
-                  {{ t("frameControls.positionHint") }}
-                </p>
-                <div class="grid grid-cols-2 gap-2">
-                  <div>
-                    <label class="block text-xs text-gray-400 mb-1">{{
-                      t("frameControls.x", {
-                        x: Math.round(imagePosition.x),
-                      })
-                    }}</label>
-                    <input
-                      v-model="imagePosition.x"
-                      type="range"
-                      :min="
-                        -Math.min(exportSize.width, exportSize.height) * 0.2
-                      "
-                      :max="Math.min(exportSize.width, exportSize.height) * 0.2"
-                      class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
-                    />
-                  </div>
-                  <div>
-                    <label class="block text-xs text-gray-400 mb-1">{{
-                      t("frameControls.y", {
-                        y: Math.round(imagePosition.y),
-                      })
-                    }}</label>
-                    <input
-                      v-model="imagePosition.y"
-                      type="range"
-                      :min="
-                        -Math.min(exportSize.width, exportSize.height) * 0.2
-                      "
-                      :max="Math.min(exportSize.width, exportSize.height) * 0.2"
-                      class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
-                    />
-                  </div>
+            </div>
+          </div>
+        </UCard>
+        
+        <UCard v-if="imageUrl">
+          <h2 class="text-2xl font-semibold mb-4">Image Adjustments</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2"
+                >Zoom ({{ imageZoom }}%)</label
+              >
+              <USlider v-model="imageZoom" :min="20" :max="300" />
+            </div>
+            <div>
+              <h5 class="text-sm font-medium text-gray-300 mb-2">
+                Position
+              </h5>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1"
+                    >X: {{ Math.round(imagePosition.x) }}</label
+                  >
+                  <input
+                    v-model="imagePosition.x"
+                    type="range"
+                    :min="-exportSize.width / 2"
+                    :max="exportSize.width / 2"
+                    class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                  />
                 </div>
-                <UButton
-                  @click="resetImagePosition"
-                  size="xs"
-                  variant="outline"
-                  class="mt-2"
-                >
-                  {{ t("frameControls.reset") }}
-                </UButton>
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1"
+                    >Y: {{ Math.round(imagePosition.y) }}</label
+                  >
+                  <input
+                    v-model="imagePosition.y"
+                    type="range"
+                    :min="-exportSize.height / 2"
+                    :max="exportSize.height / 2"
+                    class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                  />
+                </div>
               </div>
+              <UButton
+                @click="resetImagePositionAndZoom"
+                size="xs"
+                variant="outline"
+                class="mt-2"
+                >Reset</UButton
+              >
             </div>
           </div>
         </UCard>
@@ -390,7 +389,6 @@
                   alt="Preview with frame"
                   @mousedown="startDrag"
                   @touchstart="startDrag"
-                  draggable="false"
                 />
                 <img
                   v-if="
@@ -435,6 +433,7 @@ const borderRadius = ref(0);
 const selectedFramePath = ref("");
 const customFrameUrl = ref("");
 const frameOpacity = ref(100);
+const imageZoom = ref(100);
 
 const imagePosition = ref({ x: 0, y: 0 });
 const isDragging = ref(false);
@@ -474,16 +473,6 @@ const {
   }
 );
 
-const imageStyle = computed(() => {
-  if (frameMode.value === "border") {
-    return {
-      border: `${borderWidth.value}px ${borderStyle.value} ${borderColor.value}`,
-      borderRadius: `${borderRadius.value}px`,
-    };
-  }
-  return {};
-});
-
 const frameStyle = computed(() => ({
   opacity: frameOpacity.value / 100,
 }));
@@ -514,10 +503,10 @@ const draggableImageStyle = computed(() => {
   return {
     transform: `translate(${imagePosition.value.x * scaleX}px, ${
       imagePosition.value.y * scaleY
-    }px)`,
-    // width: `${previewSize.value.width}px`,
-    // height: `${previewSize.value.height}px`,
-    objectFit: "cover",
+    }px) scale(${imageZoom.value / 100})`,
+    width: `${previewSize.value.width}px`,
+    height: `${previewSize.value.height}px`,
+    objectFit: "contain",
   };
 });
 
@@ -529,6 +518,7 @@ const handleImageSelect = (event) => {
       URL.revokeObjectURL(imageUrl.value);
     }
     imageUrl.value = URL.createObjectURL(file);
+    resetImagePositionAndZoom();
   }
 };
 
@@ -545,6 +535,7 @@ const handleImageDrop = (event) => {
         URL.revokeObjectURL(imageUrl.value);
       }
       imageUrl.value = URL.createObjectURL(file);
+      resetImagePositionAndZoom();
     }
   }
 };
@@ -585,8 +576,9 @@ const selectFrame = (framePath) => {
   }
 };
 
-const resetImagePosition = () => {
+const resetImagePositionAndZoom = () => {
   imagePosition.value = { x: 0, y: 0 };
+  imageZoom.value = 100;
 };
 
 const startDrag = (event) => {
@@ -627,7 +619,7 @@ const onDrag = (event) => {
   const newY = (clientY - dragStart.value.y) * scaleY;
 
   const maxOffset =
-    Math.min(exportSize.value.width, exportSize.value.height) * 0.2;
+    Math.min(exportSize.value.width, exportSize.value.height) * 0.5;
 
   imagePosition.value = {
     x: Math.max(-maxOffset, Math.min(maxOffset, newX)),
@@ -664,27 +656,39 @@ const downloadImage = async () => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   const img = new Image();
-  img.crossOrigin = "anonymous"; // Handle CORS for external images
+  img.crossOrigin = "anonymous";
 
   img.onload = async () => {
-    // Shared 'object-fit: cover' logic
-    const drawCoverImage = (context, targetWidth, targetHeight) => {
-      const hRatio = targetWidth / img.width;
-      const vRatio = targetHeight / img.height;
-      const ratio = Math.max(hRatio, vRatio);
-      const centerShiftX = (targetWidth - img.width * ratio) / 2;
-      const centerShiftY = (targetHeight - img.height * ratio) / 2;
+    const drawContainedImage = (context, targetWidth, targetHeight) => {
+      const imgRatio = img.width / img.height;
+      const targetRatio = targetWidth / targetHeight;
+      let drawWidth = targetWidth;
+      let drawHeight = targetHeight;
+      let offsetX = 0;
+      let offsetY = 0;
 
+      if (imgRatio > targetRatio) {
+        drawHeight = targetWidth / imgRatio;
+        offsetY = (targetHeight - drawHeight) / 2;
+      } else {
+        drawWidth = targetHeight * imgRatio;
+        offsetX = (targetWidth - drawWidth) / 2;
+      }
+
+      const zoom = imageZoom.value / 100;
+      const zoomedWidth = drawWidth * zoom;
+      const zoomedHeight = drawHeight * zoom;
+
+      const panX = imagePosition.value.x;
+      const panY = imagePosition.value.y;
+
+      context.clearRect(0, 0, targetWidth, targetHeight);
       context.drawImage(
         img,
-        0,
-        0,
-        img.width,
-        img.height,
-        centerShiftX + imagePosition.value.x,
-        centerShiftY + imagePosition.value.y,
-        img.width * ratio,
-        img.height * ratio
+        offsetX - (zoomedWidth - drawWidth) / 2 + panX,
+        offsetY - (zoomedHeight - drawHeight) / 2 + panY,
+        zoomedWidth,
+        zoomedHeight
       );
     };
 
@@ -700,8 +704,8 @@ const downloadImage = async () => {
       imageCanvas.width = exportSize.value.width;
       imageCanvas.height = exportSize.value.height;
       const imageCtx = imageCanvas.getContext("2d");
-      
-      drawCoverImage(imageCtx, exportSize.value.width, exportSize.value.height);
+
+      drawContainedImage(imageCtx, exportSize.value.width, exportSize.value.height);
 
       ctx.drawImage(imageCanvas, borderSize, borderSize);
 
@@ -709,13 +713,12 @@ const downloadImage = async () => {
       link.download = `bordered-${selectedImage.value?.name || "image.png"}-${Date.now()}`;
       link.href = canvas.toDataURL("image/png");
       link.click();
-
-    } else { // 'frame' mode
+    } else {
       canvas.width = exportSize.value.width;
       canvas.height = exportSize.value.height;
 
-      drawCoverImage(ctx, canvas.width, canvas.height);
-      
+      drawContainedImage(ctx, canvas.width, canvas.height);
+
       const frameSrc = selectedFramePath.value || customFrameUrl.value;
       if (frameSrc) {
         const frameImg = new Image();
@@ -723,7 +726,7 @@ const downloadImage = async () => {
         frameImg.onload = () => {
           ctx.globalAlpha = frameOpacity.value / 100;
           ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-          
+
           const link = document.createElement("a");
           link.download = `framed-${selectedImage.value?.name || "image.png"}-${Date.now()}`;
           link.href = canvas.toDataURL("image/png");
@@ -731,7 +734,6 @@ const downloadImage = async () => {
         };
         frameImg.src = frameSrc;
       } else {
-        // No frame selected, just download the image
         const link = document.createElement("a");
         link.download = `image-${selectedImage.value?.name || "image.png"}-${Date.now()}`;
         link.href = canvas.toDataURL("image/png");
@@ -740,7 +742,6 @@ const downloadImage = async () => {
     }
   };
 
-  // This will trigger the onload function
   img.src = imageUrl.value;
 };
 
