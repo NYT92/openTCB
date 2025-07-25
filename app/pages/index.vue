@@ -465,8 +465,8 @@ const {
   data: premadeFrames,
   pending,
   error,
-} = await useLazyFetch(
-  "https://raw.githubusercontent.com/NYT92/openTCB/refs/heads/main/provided_frame.json",
+} = await useFetch(
+  "https://rawcdn.githack.com/NYT92/openTCB/refs/heads/master/provided_frame.json",
   {
     responseType: "json",
     cache: "force-cache",
