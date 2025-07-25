@@ -1,0 +1,53 @@
+{
+  "title": "openTwibbonize Custom Border",
+  "description": "បញ្ចូលរូបភាពរបស់អ្នកបន្ថែមស៊ុមឬស៊ុមផ្ទាល់ខ្លួន",
+  "upload": {
+    "title": "បញ្ចូលរូបភាព",
+    "dragAndDrop": "អូសហើយទម្លាក់រូបភាពរបស់អ្នកនៅទីនេះឬចុចដើម្បីរកមើល",
+    "fileTypes": "PNG, JPG, GIF រហូតដល់ 10MB"
+  },
+  "frameOptions": {
+    "title": "ជម្រើសស៊ុម",
+    "simpleBorder": "ស៊ុមធម្មតា",
+    "customFrame": "ស៊ុមផ្ទាល់ខ្លួន"
+  },
+  "borderSettings": {
+    "title": "ការកំណត់ស៊ុម",
+    "width": "ទទឹងស៊ុម៖ {width}px",
+    "color": "ពណ៌ស៊ុម",
+    "style": "រចនាប័ទ្មស៊ុម",
+    "radius": "កាំជ្រុង៖ {radius}px",
+    "styles": {
+      "solid": "ដិត",
+      "dashed": "ដាច់ៗ",
+      "dotted": "ចុចៗ",
+      "double": "ពីរជាន់",
+      "groove": " Groove",
+      "ridge": "Ridge"
+    }
+  },
+  "frameSelection": {
+    "title": "ការជ្រើសរើសស៊ុម",
+    "premade": "ស៊ុមដែលបានធ្វើរួច",
+    "loading": "កំពុងដំណើរការ...",
+    "error": "បរាជ័យក្នុងការផ្ទុកស៊ុម",
+    "none": "គ្មានស៊ុម",
+    "upload": "បញ្ចូលស៊ុមផ្ទាល់ខ្លួន",
+    "uploadHint": "បញ្ចូលស៊ុម (PNG ជាមួយតម្លាភាព)",
+    "uploaded": "បានបញ្ចូលស៊ុមផ្ទាល់ខ្លួន"
+  },
+  "frameControls": {
+    "title": "ការបញ្ជាស៊ុម",
+    "opacity": "ភាពស្រអាប់នៃស៊ុម៖ {opacity}%",
+    "position": "ទីតាំងរូបភាព",
+    "positionHint": "អូសរូបភាពនៅក្នុងការមើលជាមុនដើម្បីដាក់ទីតាំងឡើងវិញ",
+    "x": "X: {x}px",
+    "y": "Y: {y}px",
+    "reset": "កំណត់ទីតាំងឡើងវិញ"
+  },
+  "preview": {
+    "title": "កែប្រែហើយ",
+    "download": "ទាញយក",
+    "uploadPrompt": "បញ្ចូលរូបភាពដើម្បីមើលជាមុន"
+  }
+}

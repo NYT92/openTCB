@@ -1,0 +1,53 @@
+{
+  "title": "openTwibbonize Custom Border",
+  "description": "Upload your image and add custom frames or borders",
+  "upload": {
+    "title": "Upload Image",
+    "dragAndDrop": "Drag and drop your image here, or click to browse",
+    "fileTypes": "PNG, JPG, GIF up to 10MB"
+  },
+  "frameOptions": {
+    "title": "Frame Options",
+    "simpleBorder": "Simple Border",
+    "customFrame": "Custom Frame"
+  },
+  "borderSettings": {
+    "title": "Border Settings",
+    "width": "Border Width: {width}px",
+    "color": "Border Color",
+    "style": "Border Style",
+    "radius": "Corner Radius: {radius}px",
+    "styles": {
+      "solid": "Solid",
+      "dashed": "Dashed",
+      "dotted": "Dotted",
+      "double": "Double",
+      "groove": "Groove",
+      "ridge": "Ridge"
+    }
+  },
+  "frameSelection": {
+    "title": "Frame Selection",
+    "premade": "Premade Frames",
+    "loading": "Loading frames...",
+    "error": "Failed to load frames",
+    "none": "No frames available",
+    "upload": "Upload Custom Frame",
+    "uploadHint": "Upload frame (PNG with transparency)",
+    "uploaded": "Custom frame uploaded"
+  },
+  "frameControls": {
+    "title": "Frame Controls",
+    "opacity": "Frame Opacity: {opacity}%",
+    "position": "Image Position",
+    "positionHint": "Drag the image in the preview to reposition",
+    "x": "X: {x}px",
+    "y": "Y: {y}px",
+    "reset": "Reset Position"
+  },
+  "preview": {
+    "title": "Preview",
+    "download": "Download",
+    "uploadPrompt": "Upload an image to see preview"
+  }
+}
