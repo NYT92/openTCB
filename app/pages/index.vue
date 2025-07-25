@@ -181,9 +181,11 @@
                 </div>
                 <div
                   v-else-if="error"
-                  class="col-span-3 text-center text-red-400 py-4"
+                  class="col-span-3 text-center text-red-400 py-4 flex items-center justify-center gap-1"
                 >
                   {{ t("frameSelection.error") }}
+
+                  <UButton @click="refresh" color="primary" variant="outline" icon="i-heroicons-arrow-path-20-solid"></UButton>
                 </div>
                 <div
                   v-else-if="!premadeFrames || premadeFrames.length === 0"
@@ -464,6 +466,7 @@ const borderStyleOptions = computed(() => [
 const {
   data: premadeFrames,
   pending,
+  refresh,
   error,
 } = await useFetch(
   "https://rawcdn.githack.com/NYT92/openTCB/refs/heads/master/provided_frame.json",
