@@ -66,7 +66,7 @@
                 ></path>
               </svg>
               <p
-                class="truncate max-w-xs text-center"
+                class="truncate text-center"
                 :title="selectedImage.name"
               >
                 {{ selectedImage.name }}
@@ -149,8 +149,8 @@
             <div>
               <label class="block text-sm font-medium text-gray-300 mb-2">{{
                 t("frameSelection.upload")
-              }}</label>
-              <div
+              }} - DISABLED (COMING SOON)</label>
+              <!-- <div
                 ref="frameDropZone"
                 class="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center hover:border-gray-500 transition-colors cursor-pointer"
                 :class="{ 'border-blue-500': isOverDropZoneFrame }"
@@ -190,7 +190,7 @@
                   </svg>
                   <p class="text-sm">{{ t("frameSelection.uploaded") }}</p>
                 </div>
-              </div>
+              </div> -->
             </div>
 
             <div v-if="selectedFramePath || customFrameUrl">
