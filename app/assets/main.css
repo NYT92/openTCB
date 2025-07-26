@@ -1,2 +1,10 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+html.high-contrast {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html.high-contrast img {
+  filter: invert(1) hue-rotate(180deg);
+}

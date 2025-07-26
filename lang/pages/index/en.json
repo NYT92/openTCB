@@ -1,53 +1,40 @@
 {
   "title": "openTwibbonize Custom Border",
-  "description": "Upload your image and add custom frames or borders",
+  "description": "Add a custom frame or border to your photo.",
   "upload": {
-    "title": "Upload Image",
-    "dragAndDrop": "Drag and drop your image here, or click to browse",
-    "fileTypes": "PNG, JPG, GIF up to 10MB"
+    "title": "Upload Your Photo",
+    "dragAndDrop": "Drop your photo here, or click to select a file.",
+    "fileTypes": "Supports PNG, JPG, and GIF images."
   },
   "frameOptions": {
-    "title": "Frame Options",
+    "title": "Choose a Frame",
     "simpleBorder": "Simple Border",
-    "customFrame": "Custom Frame"
-  },
-  "borderSettings": {
-    "title": "Border Settings",
-    "width": "Border Width: {width}px",
-    "color": "Border Color",
-    "style": "Border Style",
-    "radius": "Corner Radius: {radius}px",
-    "styles": {
-      "solid": "Solid",
-      "dashed": "Dashed",
-      "dotted": "Dotted",
-      "double": "Double",
-      "groove": "Groove",
-      "ridge": "Ridge"
-    }
+    "customFrame": "Your Own Frame"
   },
   "frameSelection": {
-    "title": "Frame Selection",
-    "premade": "Premade Frames",
+    "title": "Select a Frame",
+    "premade": "Choose a frame from our collection:",
     "loading": "Loading frames...",
-    "error": "Failed to load frames",
-    "none": "No frames available",
-    "upload": "Upload Custom Frame",
-    "uploadHint": "Upload frame (PNG with transparency)",
-    "uploaded": "Custom frame uploaded"
+    "error": "Could not load frames.",
+    "none": "No frames to show.",
+    "upload": "Upload Your Own Frame",
+    "uploadHint": "Upload a frame with a transparent background (PNG).",
+    "uploaded": "Your frame has been uploaded."
   },
   "frameControls": {
-    "title": "Frame Controls",
-    "opacity": "Frame Opacity: {opacity}%",
-    "position": "Image Position",
-    "positionHint": "Drag the image in the preview to reposition",
-    "x": "X: {x}px",
-    "y": "Y: {y}px",
-    "reset": "Reset Position"
+    "title": "Adjust Your Frame",
+    "opacity": "Frame Transparency: {opacity}%",
+    "position": "Photo Position",
+    "positionHint": "Move the photo in the preview to adjust its position.",
+    "x": "Horizontal: {x}px",
+    "y": "Vertical: {y}px",
+    "imgAdjustment": "Adjust Your Photo",
+    "reset": "Reset Position",
+    "zoom": "Zoom: {zoom}%"
   },
   "preview": {
     "title": "Preview",
-    "download": "Download",
-    "uploadPrompt": "Upload an image to see preview"
+    "download": "Download Your Photo",
+    "uploadPrompt": "Upload a photo to see a preview."
   }
 }

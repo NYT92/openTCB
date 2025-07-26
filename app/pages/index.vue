@@ -13,8 +13,12 @@
       </p>
 
       <div class="flex gap-2 justify-center items-center mt-4">
-        <UButton @click="$switchLocale('en')" color="info" variant="outline">🇺🇸 English</UButton>
-        <UButton @click="$switchLocale('kh')" color="info" variant="outline">🇰🇭 Khmer</UButton>
+        <UButton @click="$switchLocale('en')" color="info" variant="outline"
+          >🇺🇸 English</UButton
+        >
+        <UButton @click="$switchLocale('kh')" color="info" variant="outline"
+          >🇰🇭 Khmer</UButton
+        >
       </div>
     </div>
 
@@ -23,12 +27,10 @@
         <UCard>
           <h2 class="text-2xl font-semibold mb-4">{{ t("upload.title") }}</h2>
           <div
-            @drop="handleImageDrop"
-            @dragover.prevent
-            @dragenter.prevent
+            ref="imageDropZone"
             class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors cursor-pointer"
-            :class="{ 'border-blue-500': isDraggingImage }"
-            @click="$refs.imageInput.click()"
+            :class="{ 'border-blue-500': isOverDropZoneImage }"
+            @click="openImageDialog"
           >
             <div v-if="!selectedImage">
               <svg
@@ -74,97 +76,14 @@
               </p>
             </div>
           </div>
-
-          <input
-            ref="imageInput"
-            type="file"
-            accept="image/*"
-            @change="handleImageSelect"
-            class="hidden"
-          />
         </UCard>
 
-        <UCard>
+        <UCard v-if="selectedImage">
           <h2 class="text-2xl font-semibold mb-4">
             {{ t("frameOptions.title") }}
           </h2>
-          <div class="mb-6">
-            <div class="flex gap-2 mb-4">
-              <UButton
-                @click="frameMode = 'border'"
-                :variant="frameMode === 'border' ? 'solid' : 'outline'"
-                color="primary"
-              >
-                {{ t("frameOptions.simpleBorder") }}
-              </UButton>
-              <UButton
-                @click="frameMode = 'frame'"
-                :variant="frameMode === 'frame' ? 'solid' : 'outline'"
-                color="primary"
-              >
-                {{ t("frameOptions.customFrame") }}
-              </UButton>
-            </div>
-          </div>
-          <!-- Simple Border Options -->
-          <div v-if="frameMode === 'border'" class="space-y-4">
-            <h3 class="text-lg font-semibold">
-              {{ t("borderSettings.title") }}
-            </h3>
 
-            <!-- Border Width -->
-            <div>
-              <label class="block text-sm font-medium mb-2">{{
-                t("borderSettings.width", { width: borderWidth })
-              }}</label>
-              <USlider v-model="borderWidth" :min="0" :max="50" />
-            </div>
-
-            <!-- Border Color -->
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">{{
-                t("borderSettings.color")
-              }}</label>
-              <div class="flex gap-2 flex-wrap mb-2">
-                <button
-                  v-for="color in borderColors"
-                  :key="color.name"
-                  @click="borderColor = color.value"
-                  class="w-8 h-8 rounded-full border-2 transition-all"
-                  :style="{ backgroundColor: color.value }"
-                  :class="
-                    borderColor === color.value
-                      ? 'border-white scale-110'
-                      : 'border-gray-600'
-                  "
-                ></button>
-              </div>
-              <input
-                v-model="borderColor"
-                type="color"
-                class="w-full h-10 bg-gray-700 border border-gray-600 rounded cursor-pointer"
-              />
-            </div>
-
-            <!-- Border Style -->
-            <div>
-              <label class="block text-sm font-medium mb-2">{{
-                t("borderSettings.style")
-              }}</label>
-              <USelect v-model="borderStyle" :options="borderStyleOptions" />
-            </div>
-
-            <!-- Border Radius -->
-            <div>
-              <label class="block text-sm font-medium mb-2">{{
-                t("borderSettings.radius", { radius: borderRadius })
-              }}</label>
-              <USlider v-model="borderRadius" :min="0" :max="100" />
-            </div>
-          </div>
-
-          <!-- Custom Frame Options -->
-          <div v-else class="space-y-4">
+          <div class="space-y-4">
             <h3 class="text-lg font-semibold">
               {{ t("frameSelection.title") }}
             </h3>
@@ -185,7 +104,12 @@
                 >
                   {{ t("frameSelection.error") }}
 
-                  <UButton @click="refresh" color="primary" variant="outline" icon="i-heroicons-arrow-path-20-solid"></UButton>
+                  <UButton
+                    @click="refresh"
+                    color="primary"
+                    variant="outline"
+                    icon="i-heroicons-arrow-path-20-solid"
+                  ></UButton>
                 </div>
                 <div
                   v-else-if="!premadeFrames || premadeFrames.length === 0"
@@ -227,12 +151,10 @@
                 t("frameSelection.upload")
               }}</label>
               <div
-                @drop="handleFrameDrop"
-                @dragover.prevent
-                @dragenter.prevent
+                ref="frameDropZone"
                 class="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center hover:border-gray-500 transition-colors cursor-pointer"
-                :class="{ 'border-blue-500': isDraggingFrame }"
-                @click="$refs.frameInput.click()"
+                :class="{ 'border-blue-500': isOverDropZoneFrame }"
+                @click="openFrameDialog"
               >
                 <div v-if="!customFrameUrl">
                   <svg
@@ -269,14 +191,6 @@
                   <p class="text-sm">{{ t("frameSelection.uploaded") }}</p>
                 </div>
               </div>
-
-              <input
-                ref="frameInput"
-                type="file"
-                accept="image/*"
-                @change="handleFrameSelect"
-                class="hidden"
-              />
             </div>
 
             <div v-if="selectedFramePath || customFrameUrl">
@@ -293,19 +207,21 @@
             </div>
           </div>
         </UCard>
-        
-        <UCard v-if="imageUrl">
-          <h2 class="text-2xl font-semibold mb-4">Image Adjustments</h2>
+
+        <UCard v-if="selectedImage && (selectedFramePath || customFrameUrl)">
+          <h2 class="text-2xl font-semibold mb-4">
+            {{ t("frameControls.imgAdjustment") }}
+          </h2>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium mb-2"
-                >Zoom ({{ imageZoom }}%)</label
-              >
+              <label class="block text-sm font-medium mb-2">
+                {{ t("frameControls.zoom", { zoom: imageZoom }) }}
+              </label>
               <USlider v-model="imageZoom" :min="20" :max="300" />
             </div>
             <div>
               <h5 class="text-sm font-medium text-gray-300 mb-2">
-                Position
+                {{ t("frameControls.position") }}
               </h5>
               <div class="grid grid-cols-2 gap-2">
                 <div>
@@ -338,24 +254,16 @@
                 size="xs"
                 variant="outline"
                 class="mt-2"
-                >Reset</UButton
               >
+                Reset
+              </UButton>
             </div>
           </div>
         </UCard>
 
-        <!-- Preview Section -->
-        <UCard>
+        <UCard v-if="selectedImage && imageUrl && (selectedFramePath || customFrameUrl)">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-semibold">{{ t("preview.title") }}</h2>
-            <UButton
-              v-if="imageUrl"
-              @click="downloadImage"
-              color="primary"
-              variant="solid"
-            >
-              {{ t("preview.download") }}
-            </UButton>
           </div>
 
           <div
@@ -393,10 +301,7 @@
                   @touchstart="startDrag"
                 />
                 <img
-                  v-if="
-                    frameMode === 'frame' &&
-                    (selectedFramePath || customFrameUrl)
-                  "
+                  v-if="selectedFramePath || customFrameUrl"
                   :src="selectedFramePath || customFrameUrl"
                   class="absolute inset-0 w-full h-full object-cover pointer-events-none"
                   :style="frameStyle"
@@ -405,186 +310,139 @@
               </div>
             </div>
           </div>
+          <div class="flex justify-center w-full my-2">
+            <UButton
+              v-if="imageUrl"
+              @click="downloadImage"
+              color="primary"
+              variant="solid"
+              size="xl"
+              icon="i-heroicons-arrow-down-tray"
+            >
+              {{ t("preview.download") }}
+            </UButton>
+          </div>
         </UCard>
       </div>
     </div>
-
-    <footer class="text-center text-gray-400 text-sm mt-4">
-      <p>
-        <a href="https://github.com/NYT92/openTCB" target="_blank"> openTCB </a>
-        |
-        <a href="https://github.com/NYT92" target="_blank"> NYT92 </a>
-      </p>
-    </footer>
   </div>
 </template>
 
 <script setup>
+import {
+  useFileDialog,
+  useDropZone,
+  useWindowSize,
+  useObjectUrl,
+} from "@vueuse/core";
+import { useAccessibility } from '~/composables/useAccessibility';
+
 const { t, $switchLocale } = useI18n();
+
 const selectedImage = ref(null);
-const imageUrl = ref("");
-const isDraggingImage = ref(false);
-const isDraggingFrame = ref(false);
-const frameMode = ref("border");
+const imageUrl = useObjectUrl(selectedImage);
 
-const borderWidth = ref(10);
-const borderColor = ref("#ffffff");
-const borderStyle = ref("solid");
-const borderRadius = ref(0);
-
-const selectedFramePath = ref("");
-const customFrameUrl = ref("");
-const frameOpacity = ref(100);
-const imageZoom = ref(100);
-
-const imagePosition = ref({ x: 0, y: 0 });
-const isDragging = ref(false);
-const dragStart = ref({ x: 0, y: 0 });
-const exportSize = ref({ width: 1024, height: 1024 });
-const previewSize = ref({ width: 300, height: 300 });
-
-const borderColors = [
-  { name: "White", value: "#ffffff" },
-  { name: "Black", value: "#000000" },
-  { name: "Red", value: "#ef4444" },
-  { name: "Blue", value: "#3b82f6" },
-  { name: "Green", value: "#10b981" },
-  { name: "Yellow", value: "#f59e0b" },
-  { name: "Purple", value: "#8b5cf6" },
-  { name: "Pink", value: "#ec4899" },
-];
-
-const borderStyleOptions = computed(() => [
-  { label: t("borderSettings.styles.solid"), value: "solid" },
-  { label: t("borderSettings.styles.dashed"), value: "dashed" },
-  { label: t("borderSettings.styles.dotted"), value: "dotted" },
-  { label: t("borderSettings.styles.double"), value: "double" },
-  { label: t("borderSettings.styles.groove"), value: "groove" },
-  { label: t("borderSettings.styles.ridge"), value: "ridge" },
-]);
-
-const {
-  data: premadeFrames,
-  pending,
-  refresh,
-  error,
-} = await useFetch(
-  "https://rawcdn.githack.com/NYT92/openTCB/refs/heads/master/provided_frame.json",
-  {
-    responseType: "json",
-    cache: "force-cache",
-  }
-);
-
-const frameStyle = computed(() => ({
-  opacity: frameOpacity.value / 100,
-}));
-
-const updatePreviewSize = () => {
-  const maxWidth = Math.min(window.innerWidth - 100, 400);
-  const maxHeight = Math.min(window.innerHeight - 300, 400);
-  const size = Math.min(maxWidth, maxHeight);
-  previewSize.value = { width: size, height: size };
-};
-
-const previewContainerStyle = computed(() => ({
-  width: `${previewSize.value.width}px`,
-  height: `${previewSize.value.height}px`,
-  border:
-    frameMode.value === "border"
-      ? `${borderWidth.value}px ${borderStyle.value} ${borderColor.value}`
-      : "none",
-  borderRadius: frameMode.value === "border" ? `${borderRadius.value}px` : "0",
-  maxWidth: "100%",
-  maxHeight: "100%",
-}));
-
-const draggableImageStyle = computed(() => {
-  const scaleX = previewSize.value.width / exportSize.value.width;
-  const scaleY = previewSize.value.height / exportSize.value.height;
-
-  return {
-    transform: `translate(${imagePosition.value.x * scaleX}px, ${
-      imagePosition.value.y * scaleY
-    }px) scale(${imageZoom.value / 100})`,
-    width: `${previewSize.value.width}px`,
-    height: `${previewSize.value.height}px`,
-    objectFit: "contain",
-  };
+const { files: imageFiles, open: openImageDialog } = useFileDialog({
+  accept: "image/*",
+  multiple: false,
 });
 
-const handleImageSelect = (event) => {
-  const file = event.target.files[0];
-  if (file && file.type.startsWith("image/")) {
-    selectedImage.value = file;
-    if (imageUrl.value) {
-      URL.revokeObjectURL(imageUrl.value);
-    }
-    imageUrl.value = URL.createObjectURL(file);
-    resetImagePositionAndZoom();
-  }
-};
-
-const handleImageDrop = (event) => {
-  event.preventDefault();
-  isDraggingImage.value = false;
-
-  const files = event.dataTransfer.files;
-  if (files.length > 0) {
-    const file = files[0];
-    if (file.type.startsWith("image/")) {
-      selectedImage.value = file;
-      if (imageUrl.value) {
-        URL.revokeObjectURL(imageUrl.value);
-      }
-      imageUrl.value = URL.createObjectURL(file);
-      resetImagePositionAndZoom();
-    }
-  }
-};
-
-const handleFrameSelect = (event) => {
-  const file = event.target.files[0];
-  if (file && file.type.startsWith("image/")) {
-    if (customFrameUrl.value) {
-      URL.revokeObjectURL(customFrameUrl.value);
-    }
-    customFrameUrl.value = URL.createObjectURL(file);
-    selectedFramePath.value = "";
-  }
-};
-
-const handleFrameDrop = (event) => {
-  event.preventDefault();
-  isDraggingFrame.value = false;
-
-  const files = event.dataTransfer.files;
-  if (files.length > 0) {
-    const file = files[0];
-    if (file.type.startsWith("image/")) {
-      if (customFrameUrl.value) {
-        URL.revokeObjectURL(customFrameUrl.value);
-      }
-      customFrameUrl.value = URL.createObjectURL(file);
+const customFrameFile = ref(null);
+const customFrameUrl = useObjectUrl(customFrameFile);
+const { open: openFrameDialog } = useFileDialog({
+  accept: "image/*",
+  multiple: false,
+  onChanged: (files) => {
+    if (files?.[0]) {
+      customFrameFile.value = files[0];
       selectedFramePath.value = "";
     }
+  },
+});
+
+// Drop zones with VueUse
+const imageDropZone = ref();
+const { isOverDropZone: isOverDropZoneImage } = useDropZone(imageDropZone, {
+  onDrop: (files) => {
+    const file = files?.[0];
+    if (file?.type.startsWith("image/")) {
+      selectedImage.value = file;
+      resetImagePositionAndZoom();
+    }
+  },
+});
+
+const frameDropZone = ref();
+const { isOverDropZone: isOverDropZoneFrame } = useDropZone(frameDropZone, {
+  onDrop: (files) => {
+    const file = files?.[0];
+    if (file?.type.startsWith("image/")) {
+      customFrameFile.value = file;
+      selectedFramePath.value = "";
+    }
+  },
+});
+
+watch(imageFiles, (files) => {
+  if (files?.[0]) {
+    selectedImage.value = files[0];
+    resetImagePositionAndZoom();
   }
+});
+
+const selectedFramePath = ref("");
+const frameOpacity = ref(100);
+const _imageZoom = ref(100);
+
+const imageZoom = computed({
+  get: () => _imageZoom.value,
+  set: (value) => {
+    _imageZoom.value = Math.max(20, Math.min(300, value));
+  },
+});
+
+const imagePosition = ref({ x: 0, y: 0 });
+const exportSize = ref({ width: 1024, height: 1024 });
+
+const { width: windowWidth, height: windowHeight } = useWindowSize();
+const previewSize = computed(() => {
+  const maxWidth = Math.min(windowWidth.value - 100, 400);
+  const maxHeight = Math.min(windowHeight.value - 300, 400);
+  const size = Math.min(maxWidth, maxHeight);
+  return { width: size, height: size };
+});
+
+// Dragging state
+const isDragging = ref(false);
+const dragStart = ref({ x: 0, y: 0 });
+const previewImage = ref();
+
+// Touch/pinch state for mobile zoom
+const isPinching = ref(false);
+const initialPinchDistance = ref(0);
+const initialZoom = ref(100);
+
+// Calculate distance between two touch points
+const getTouchDistance = (touches) => {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
 };
 
-const selectFrame = (framePath) => {
-  selectedFramePath.value = framePath;
-  if (customFrameUrl.value) {
-    URL.revokeObjectURL(customFrameUrl.value);
-    customFrameUrl.value = "";
-  }
-};
-
-const resetImagePositionAndZoom = () => {
-  imagePosition.value = { x: 0, y: 0 };
-  imageZoom.value = 100;
-};
-
+// Drag handlers
 const startDrag = (event) => {
+  // Handle pinch zoom on mobile
+  if (event.type === "touchstart" && event.touches.length === 2) {
+    isPinching.value = true;
+    initialPinchDistance.value = getTouchDistance(event.touches);
+    initialZoom.value = imageZoom.value;
+    event.preventDefault();
+    return;
+  }
+
+  // Regular drag for single touch/mouse
+  if (event.type === "touchstart" && event.touches.length > 1) return;
+
   isDragging.value = true;
   const clientX =
     event.type === "touchstart" ? event.touches[0].clientX : event.clientX;
@@ -601,14 +459,36 @@ const startDrag = (event) => {
 
   document.addEventListener("mousemove", onDrag);
   document.addEventListener("mouseup", stopDrag);
-  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("touchmove", onDrag, { passive: false });
   document.addEventListener("touchend", stopDrag);
 
   event.preventDefault();
 };
 
 const onDrag = (event) => {
-  if (!isDragging.value) return;
+  // Handle pinch zoom
+  if (
+    event.type === "touchmove" &&
+    event.touches.length === 2 &&
+    isPinching.value
+  ) {
+    const currentDistance = getTouchDistance(event.touches);
+    const scale = currentDistance / initialPinchDistance.value;
+    const newZoom = initialZoom.value * scale;
+
+    // Apply zoom with clamping
+    imageZoom.value = Math.max(20, Math.min(300, newZoom));
+
+    event.preventDefault();
+    return;
+  }
+
+  // Regular drag handling
+  if (
+    !isDragging.value ||
+    (event.type === "touchmove" && event.touches.length > 1)
+  )
+    return;
 
   const clientX =
     event.type === "touchmove" ? event.touches[0].clientX : event.clientX;
@@ -632,12 +512,67 @@ const onDrag = (event) => {
   event.preventDefault();
 };
 
-const stopDrag = () => {
+const stopDrag = (event) => {
+  // Reset pinch state
+  if (isPinching.value) {
+    isPinching.value = false;
+    initialPinchDistance.value = 0;
+    initialZoom.value = 100;
+  }
+
   isDragging.value = false;
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", stopDrag);
   document.removeEventListener("touchmove", onDrag);
   document.removeEventListener("touchend", stopDrag);
+};
+
+const {
+  data: premadeFrames,
+  pending,
+  refresh,
+  error,
+} = await useFetch(
+  "https://rawcdn.githack.com/NYT92/openTCB/refs/heads/master/provided_frame.json",
+  {
+    responseType: "json",
+    cache: "force-cache",
+  }
+);
+
+const frameStyle = computed(() => ({
+  opacity: frameOpacity.value / 100,
+}));
+
+const previewContainerStyle = computed(() => ({
+  width: `${previewSize.value.width}px`,
+  height: `${previewSize.value.height}px`,
+  maxWidth: "100%",
+  maxHeight: "100%",
+}));
+
+const draggableImageStyle = computed(() => {
+  const scaleX = previewSize.value.width / exportSize.value.width;
+  const scaleY = previewSize.value.height / exportSize.value.height;
+
+  return {
+    transform: `translate(${imagePosition.value.x * scaleX}px, ${
+      imagePosition.value.y * scaleY
+    }px) scale(${imageZoom.value / 100})`,
+    width: `${previewSize.value.width}px`,
+    height: `${previewSize.value.height}px`,
+    objectFit: "contain",
+  };
+});
+
+const selectFrame = (framePath) => {
+  selectedFramePath.value = framePath;
+  customFrameFile.value = null;
+};
+
+const resetImagePositionAndZoom = () => {
+  imagePosition.value = { x: 0, y: 0 };
+  imageZoom.value = 100;
 };
 
 const formatFileSize = (bytes) => {
@@ -695,53 +630,34 @@ const downloadImage = async () => {
       );
     };
 
-    if (frameMode.value === "border") {
-      const borderSize = borderWidth.value;
-      canvas.width = exportSize.value.width + borderSize * 2;
-      canvas.height = exportSize.value.height + borderSize * 2;
+    canvas.width = exportSize.value.width;
+    canvas.height = exportSize.value.height;
 
-      ctx.fillStyle = borderColor.value;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawContainedImage(ctx, canvas.width, canvas.height);
 
-      const imageCanvas = document.createElement("canvas");
-      imageCanvas.width = exportSize.value.width;
-      imageCanvas.height = exportSize.value.height;
-      const imageCtx = imageCanvas.getContext("2d");
+    const frameSrc = selectedFramePath.value || customFrameUrl.value;
+    if (frameSrc) {
+      const frameImg = new Image();
+      frameImg.crossOrigin = "anonymous";
+      frameImg.onload = () => {
+        ctx.globalAlpha = frameOpacity.value / 100;
+        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
 
-      drawContainedImage(imageCtx, exportSize.value.width, exportSize.value.height);
-
-      ctx.drawImage(imageCanvas, borderSize, borderSize);
-
-      const link = document.createElement("a");
-      link.download = `bordered-${selectedImage.value?.name || "image.png"}-${Date.now()}`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } else {
-      canvas.width = exportSize.value.width;
-      canvas.height = exportSize.value.height;
-
-      drawContainedImage(ctx, canvas.width, canvas.height);
-
-      const frameSrc = selectedFramePath.value || customFrameUrl.value;
-      if (frameSrc) {
-        const frameImg = new Image();
-        frameImg.crossOrigin = "anonymous";
-        frameImg.onload = () => {
-          ctx.globalAlpha = frameOpacity.value / 100;
-          ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-
-          const link = document.createElement("a");
-          link.download = `framed-${selectedImage.value?.name || "image.png"}-${Date.now()}`;
-          link.href = canvas.toDataURL("image/png");
-          link.click();
-        };
-        frameImg.src = frameSrc;
-      } else {
         const link = document.createElement("a");
-        link.download = `image-${selectedImage.value?.name || "image.png"}-${Date.now()}`;
+        link.download = `framed-${
+          selectedImage.value?.name || "image.png"
+        }-${Date.now()}`;
         link.href = canvas.toDataURL("image/png");
         link.click();
-      }
+      };
+      frameImg.src = frameSrc;
+    } else {
+      const link = document.createElement("a");
+      link.download = `image-${
+        selectedImage.value?.name || "image.png"
+      }-${Date.now()}`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
     }
   };
 
@@ -751,26 +667,17 @@ const downloadImage = async () => {
 const customUrl = useRoute().query;
 
 onMounted(() => {
-  updatePreviewSize();
-  window.addEventListener("resize", updatePreviewSize);
-
-  if (customUrl.t === "custom") {
-    frameMode.value = "frame";
-  }
   if (customUrl.t === "custom" && customUrl.data) {
     const base64 = customUrl.data;
-    imageUrl.value = `data:image/png;base64,${base64}`;
+    // Create a blob from base64 and set as selectedImage
+    fetch(`data:image/png;base64,${base64}`)
+      .then((res) => res.blob())
+      .then((blob) => {
+        selectedImage.value = new File([blob], "custom-image.png", {
+          type: "image/png",
+        });
+      });
   }
-});
-
-onUnmounted(() => {
-  if (imageUrl.value) {
-    URL.revokeObjectURL(imageUrl.value);
-  }
-  if (customFrameUrl.value) {
-    URL.revokeObjectURL(customFrameUrl.value);
-  }
-  window.removeEventListener("resize", updatePreviewSize);
 });
 </script>
 

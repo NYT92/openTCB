@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["@nuxt/ui", "nuxt-i18n-micro"],
+  modules: ["@nuxt/ui", "nuxt-i18n-micro", "@vueuse/nuxt"],
   ui: {
     colorMode: true,
   },
