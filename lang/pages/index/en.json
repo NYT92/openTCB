@@ -1,6 +1,8 @@
 {
   "title": "openTwibbonize Custom Border",
   "description": "Add a custom frame or border to your photo.",
+  "notice": "It looks like you're using a built-in browser from another app. Some features may not work as expected. For the best experience, please open this site in your main browser (e.g., Chrome, Safari).",
+  "close": "Close",
   "upload": {
     "title": "Upload Your Photo",
     "dragAndDrop": "Drop your photo here, or click to select a file.",
