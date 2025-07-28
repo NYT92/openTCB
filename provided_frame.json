@@ -36,33 +36,33 @@
     "credit": "សឿង សុថារី Soeurng Sothary"
   },
   {
-    "title": "គាំទ្ររាជរដ្ឋាភិបាលយកបញ្ហាប្រាសាទតាមាន់ធំ តាមាន់តូច តាក្របី និងតំបន់មុំ៣ទៅតុលាការICJ",
-    "author": "គាំទ្ររាជរដ្ឋាភិបាលយកបញ្ហាប្រាសាទតាមាន់ធំ តាមាន់តូច តាក្របី និងតំបន់មុំ៣ទៅតុលាការICJ",
-    "img": "https://opentcb.pages.dev/f7.png",
+    "name": "គាំទ្ររាជរដ្ឋាភិបាលយកបញ្ហាប្រាសាទតាមាន់ធំ តាមាន់តូច តាក្របី និងតំបន់មុំ៣ទៅតុលាការICJ",
+    "credit": "គាំទ្ររាជរដ្ឋាភិបាលយកបញ្ហាប្រាសាទតាមាន់ធំ តាមាន់តូច តាក្របី និងតំបន់មុំ៣ទៅតុលាការICJ",
+    "cdn_url": "https://opentcb.pages.dev/f7.png",
     "description": "គាំទ្ររាជរដ្ឋាភិបាលយកបញ្ហាប្រាសាទតាមាន់ធំ តាមាន់តូច តាក្របី និងតំបន់មុំ៣ទៅតុលាការICJ"
   },
   {
-    "title": "Thailand Attacks First, Cambodia Defends",
-    "author": "vet chhaykey",
-    "img": "https://opentcb.pages.dev/f8.png",
+    "name": "Thailand Attacks First, Cambodia Defends",
+    "credit": "vet chhaykey",
+    "cdn_url": "https://opentcb.pages.dev/f8.png",
     "description": "Thailand Attacks First, Cambodia Defends"
   },
   {
-    "title": "Thailand Attacked First, Cambodia Acted in Self-Defense.",
-    "author": "San Savy",
-    "img": "https://opentcb.pages.dev/f9.png",
+    "name": "Thailand Attacked First, Cambodia Acted in Self-Defense.",
+    "credit": "San Savy",
+    "cdn_url": "https://opentcb.pages.dev/f9.png",
     "description": "Thailand Attacked First, Cambodia Acted in Self-Defense."
   },
   {
-    "title": "JUSTICE FOR CAMBODIA",
-    "author": "Khiev Dara",
-    "img": "https://opentcb.pages.dev/f10.png",
+    "name": "JUSTICE FOR CAMBODIA",
+    "credit": "Khiev Dara",
+    "cdn_url": "https://opentcb.pages.dev/f10.png",
     "description": "JUSTICE FOR CAMBODIA"
   },
   {
-    "title": "ថៃវាយប្រហារមុន",
-    "author": "PHANG LEANGMENG",
-    "img": "https://opentcb.pages.dev/f11.png",
+    "name": "ថៃវាយប្រហារមុន",
+    "credit": "PHANG LEANGMENG",
+    "cdn_url": "https://opentcb.pages.dev/f11.png",
     "description": "ថៃវាយប្រហារមុន"
   }
 ]
