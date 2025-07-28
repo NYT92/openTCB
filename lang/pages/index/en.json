@@ -17,7 +17,7 @@
     "title": "Select a Frame",
     "premade": "Choose a frame from our collection:",
     "loading": "Loading frames...",
-    "error": "Could not load frames.",
+    "error": "Could not load frames. Please click refresh again.",
     "none": "No frames to show.",
     "upload": "Upload Your Own Frame",
     "uploadHint": "Upload a frame with a transparent background (PNG).",
@@ -35,8 +35,14 @@
     "zoom": "Zoom: {zoom}%"
   },
   "preview": {
-    "title": "Preview",
-    "download": "Download Your Photo",
-    "uploadPrompt": "Upload a photo to see a preview."
+    "title": "Preview & Download",
+    "uploadPrompt": "Upload an image to see the preview.",
+    "download": "Download Image"
+  },
+  "errors": {
+    "fetch_frames": {
+      "title": "Error Fetching Frames",
+      "description": "Could not load the premade frames. Please try again later."
+    }
   }
 }

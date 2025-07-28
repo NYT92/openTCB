@@ -65,10 +65,7 @@
                   d="M5 13l4 4L19 7"
                 ></path>
               </svg>
-              <p
-                class="truncate text-center"
-                :title="selectedImage.name"
-              >
+              <p class="truncate text-center" :title="selectedImage.name">
                 {{ selectedImage.name }}
               </p>
               <p class="text-sm text-gray-400">
@@ -147,9 +144,10 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">{{
-                t("frameSelection.upload")
-              }} - DISABLED (COMING SOON)</label>
+              <label class="block text-sm font-medium text-gray-300 mb-2">
+                {{ t("frameSelection.upload") }} - DISABLED (COMING SOON
+                )</label
+              >
               <!-- <div
                 ref="frameDropZone"
                 class="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center hover:border-gray-500 transition-colors cursor-pointer"
@@ -261,7 +259,11 @@
           </div>
         </UCard>
 
-        <UCard v-if="selectedImage && imageUrl && (selectedFramePath || customFrameUrl)">
+        <UCard
+          v-if="
+            selectedImage && imageUrl && (selectedFramePath || customFrameUrl)
+          "
+        >
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-semibold">{{ t("preview.title") }}</h2>
           </div>
@@ -335,9 +337,10 @@ import {
   useWindowSize,
   useObjectUrl,
 } from "@vueuse/core";
-import { useAccessibility } from '~/composables/useAccessibility';
+import { useAccessibility } from "~/composables/useAccessibility";
 
 const { t, $switchLocale } = useI18n();
+const toast = useToast();
 
 const selectedImage = ref(null);
 const imageUrl = useObjectUrl(selectedImage);
@@ -532,13 +535,24 @@ const {
   pending,
   refresh,
   error,
-} = await useFetch(
-  "https://rawcdn.githack.com/NYT92/openTCB/refs/heads/master/provided_frame.json",
+} = useLazyFetch(
+  "https://raw.githubusercontent.com/NYT92/openTCB/refs/heads/master/provided_frame.json",
   {
     responseType: "json",
     cache: "force-cache",
   }
 );
+
+watch(error, (newError) => {
+  if (newError) {
+    toast.add({
+      title: t("errors.fetch_frames.title"),
+      description: t("errors.fetch_frames.description"),
+      color: "red",
+      icon: "i-heroicons-x-circle",
+    });
+  }
+});
 
 const frameStyle = computed(() => ({
   opacity: frameOpacity.value / 100,
